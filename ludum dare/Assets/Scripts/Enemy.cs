@@ -4,11 +4,15 @@ using System.Collections;
 public class Enemy : MonoBehaviour {
 
     public MapLoader mapLoader;
+    GameObject playerCharacter;
 
-    int x,
-        y;
+    public bool isTarget = false,
+                canMove = true;
 
-    enum Behaviours {Walk, Turn, Stand};
+    public int x,
+               y;
+
+    enum Behaviours {Walk, Turn, Stand, Kill};
     Behaviours currentBehaviour;
 
     enum Directions { Up, Down, Left, Right };
@@ -19,7 +23,7 @@ public class Enemy : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        currentBehaviour = Behaviours.Walk; // (Behaviours)Random.Range(0, 2);
+        currentBehaviour = Behaviours.Kill//(Behaviours)Random.Range(0, 2);
         currentDirection = (Directions)Random.Range(0, 3);
         actionCount = Random.Range(0, 5);
 	}
@@ -31,12 +35,15 @@ public class Enemy : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        if (!isBehaving){
-            StartCoroutine(AdvanceBehaviour());
-            isBehaving = true;
+        if (canMove){
+            if (!isBehaving){
+                StartCoroutine(AdvanceBehaviour());
+                isBehaving = true;
+            }
         }
-
-        Debug.Log(currentBehaviour);
+        else{
+            actionCount = 0;
+        }
 	}
 
     bool CheckIfCanMove(int x, int y){
@@ -50,6 +57,12 @@ public class Enemy : MonoBehaviour {
         }
 
         return true;
+    }
+
+    public void GoKillPlayer(GameObject player){
+        player = playerCharacter;
+        currentBehaviour = Behaviours.Kill;
+        actionCount = 1;
     }
 
     IEnumerator AdvanceBehaviour(){
@@ -68,6 +81,9 @@ public class Enemy : MonoBehaviour {
                     break;
                 case Behaviours.Stand: 
                     yield return StartCoroutine(Stand());
+                    break;
+                case Behaviours.Kill:
+                    yield return StartCoroutine(Kill());
                     break;
             }
         }
@@ -111,13 +127,17 @@ public class Enemy : MonoBehaviour {
         Vector3 force = new Vector3();
 
         while (Vector3.Distance(transform.position, square) > .1f){
-            transform.position = Vector3.SmoothDamp(transform.position, square, ref force, .7f);
+            transform.position = Vector3.SmoothDamp(transform.position, square, ref force, .5f);
             yield return null;
         }
 
         actionCount--;
+        mapLoader.MapCoords[x, y].isOccupied = false;
+
         x = newX;
         y = newY;
+
+        mapLoader.MapCoords[x, y].isOccupied = true;
     }
 
     IEnumerator Turn(){
@@ -145,6 +165,16 @@ public class Enemy : MonoBehaviour {
             yield return new WaitForSeconds(1.0f);
             actionCount--;
         }
+    }
+
+    IEnumerator Kill(){
+        var nextSquare = mapLoader.GetNextSquareToPlayer(x, y);
+
+        Vector3 newPos = mapLoader.MapCoords[nextSquare[0], nextSquare[1]].position;
+
+        yield return StartCoroutine(moveToSquare(newPos, nextSquare[0], nextSquare[1]));
+
         yield break;
     }
+
 }
