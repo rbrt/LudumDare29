@@ -7,9 +7,11 @@ using System.Linq;
 public class MapLoader : MonoBehaviour {
 
     public SpriteRenderer wallSprite,
-                          floorSprite,
                           playerSprite,
                           enemySprite;
+
+
+    public SpriteRenderer[] floorsprites;
 
     string filePath = "Assets" + Path.DirectorySeparatorChar + "Maps" + Path.DirectorySeparatorChar;
 
@@ -88,7 +90,8 @@ public class MapLoader : MonoBehaviour {
                 }
                 // 2 = floor
                 else if (character == '0'){
-                    var newSprite = GameObject.Instantiate(floorSprite, new Vector3(x, y, 0), transform.rotation) as SpriteRenderer;
+                    int index = Random.Range(0, floorsprites.Length-1);
+                    var newSprite = GameObject.Instantiate(floorsprites[index], new Vector3(x, y, 0), transform.rotation) as SpriteRenderer;
                     newSprite.transform.parent = mapRoot.transform;
                     map.Add(newSprite);
 
@@ -96,7 +99,8 @@ public class MapLoader : MonoBehaviour {
                 }
                 // @ = player
                 else if(character == '@') {
-                    var newSprite = GameObject.Instantiate(floorSprite, new Vector3(x, y, 0), transform.rotation) as SpriteRenderer;
+                    int index = Random.Range(0, floorsprites.Length - 1);
+                    var newSprite = GameObject.Instantiate(floorsprites[index], new Vector3(x, y, 0), transform.rotation) as SpriteRenderer;
                     newSprite.transform.parent = mapRoot.transform;
                     map.Add(newSprite);
                     var player = GameObject.Instantiate(playerSprite, new Vector3(x, y, 0), transform.rotation) as SpriteRenderer;
@@ -109,7 +113,8 @@ public class MapLoader : MonoBehaviour {
                 }
                 // 2 == enemy
                 else if(character == '2') {
-                    var newSprite = GameObject.Instantiate(floorSprite, new Vector3(x, y, 0), transform.rotation) as SpriteRenderer;
+                    int index = Random.Range(0, floorsprites.Length-1);
+                    var newSprite = GameObject.Instantiate(floorsprites[index], new Vector3(x, y, 0), transform.rotation) as SpriteRenderer;
                     newSprite.transform.parent = mapRoot.transform;
                     map.Add(newSprite);
 
