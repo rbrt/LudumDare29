@@ -30,7 +30,7 @@ public class PlayerMakesChoice : MonoBehaviour {
     void Start(){
         lineRenderers = LineRendererObject.GetComponentsInChildren<LineRenderer>().ToList();
         lineRenderers.ForEach(x => {
-            x.sortingLayerID =2;
+            x.sortingLayerID =4;
         });
         ResetPosition();
     }
@@ -74,6 +74,7 @@ public class PlayerMakesChoice : MonoBehaviour {
         yield return StartCoroutine(DisplayDialogue(correctTarget));
 
         // Kill Knight
+        GameObject.Find("DeathSoundEffectPlayer").GetComponent<DeathSoundEffects>().PlayEnemyDeath();
         yield return StartCoroutine(targetEnemy.GetComponent<Enemy>().Die());
 
         yield return StartCoroutine(fade.FadeIn());
@@ -104,7 +105,7 @@ public class PlayerMakesChoice : MonoBehaviour {
         yield return StartCoroutine(FadeEnemies(enemies));
         
 
-        GameObject.Find("Fade").GetComponent<MeshRenderer>().sortingLayerID = 2;
+        GameObject.Find("Fade").GetComponent<MeshRenderer>().sortingLayerID = 4;
 
         // slashes
         yield return StartCoroutine(DrawSlashes());
@@ -165,7 +166,7 @@ public class PlayerMakesChoice : MonoBehaviour {
     }
 
     IEnumerator DisplayDialogue(bool correctChoice){
-        spriteRenderer.sortingLayerID = 3;
+        spriteRenderer.sortingLayerID = 5;
         Vector3 speechPos = playerDeathLocation.position;
         Vector3 speechScale = transform.localScale;
         speechScale.x = .5f;
@@ -213,6 +214,8 @@ public class PlayerMakesChoice : MonoBehaviour {
     }
 
     IEnumerator DrawSlash(LineRenderer lineRenderer){
+        GameObject.Find("SoundEffectPlayer").GetComponent<SoundEffectPlayer>().PlaySlash();
+        GameObject.Find("DeathSoundEffectPlayer").GetComponent<DeathSoundEffects>().PlayPlayerDeath();
         float upperBound = .5f;
         float lowerBound = 0;
 

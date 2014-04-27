@@ -176,7 +176,6 @@ public class MapLoader : MonoBehaviour {
             var current = enemy.GetComponent<Enemy>();
             current.canMove = false;
             if (current.x == x && current.y == y){
-                Debug.Log(current.x + " " + x);
                 foundEnemy = enemy;
             }
         });

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 public class Enemy : MonoBehaviour {
 
@@ -237,15 +238,25 @@ public class Enemy : MonoBehaviour {
     }
 
     public IEnumerator Die(){
-        for (int i =0; i < deathAnimations.Length; i++){
-            spriteRenderer.sprite = deathAnimations[i];
-            if (i > 3){
-                yield return new WaitForSeconds(.09f);
+        var components = GetComponentsInChildren<Transform>().Where(x => !x.gameObject.name.Equals("renderer")).ToArray();
+        for(int i = 0; i < components.Count(); i++ ){
+            if (components[i].gameObject.name.Equals("EnemySprite(Clone)")){
             }
             else{
-                yield return new WaitForSeconds(.2f);
+                Destroy(components[i].gameObject);
             }
+            
         }
+
+            for(int i = 0; i < deathAnimations.Length; i++) {
+                spriteRenderer.sprite = deathAnimations[i];
+                if(i > 3) {
+                    yield return new WaitForSeconds(.09f);
+                }
+                else {
+                    yield return new WaitForSeconds(.2f);
+                }
+            }
     }
 
     public bool FarFromPlayer(){

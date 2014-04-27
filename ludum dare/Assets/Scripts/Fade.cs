@@ -9,7 +9,7 @@ public class Fade : MonoBehaviour {
 	void Start () {
         mat = GetComponent<MeshRenderer>().material;
         var edge = Camera.main.camera.GetComponentsInChildren<Transform>().Where(x => x.name.Equals("edge")).First();
-        edge.GetComponent<MeshRenderer>().sortingLayerID = 2;
+        edge.GetComponent<MeshRenderer>().sortingLayerID = 4;
 
 	}
 

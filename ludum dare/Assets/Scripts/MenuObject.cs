@@ -22,11 +22,10 @@ public class MenuObject : MonoBehaviour {
 	void Start () {
         currentState = MenuStates.Main;
         spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteRenderer.renderer.sortingLayerID = 3;
+        spriteRenderer.renderer.sortingLayerID = 5;
 	}
 	
     public IEnumerator SetEndSprite(bool success){
-        Debug.Log("fired coroutine");
         blocked = true;
         if (success){
             endSprite = winSprite;

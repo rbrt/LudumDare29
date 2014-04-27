@@ -167,6 +167,7 @@ public class Player : MonoBehaviour {
 
     IEnumerator AnimateWalk(){
         int lastFrame = 0;
+        GameObject.Find("SoundEffectPlayer").GetComponent<SoundEffectPlayer>().PlayFootstep();
 
         while(isWalking) {
             if (lastFrame < frontAnimations.Length){
