@@ -27,7 +27,11 @@ public class DeathSoundEffects : MonoBehaviour {
 
     public void PlayPlayerDeath(){
         if (!sources[sourceIndex].isPlaying){
-            sources[sourceIndex].clip = playerDeaths[Random.Range(0,playerDeaths.Length-1)];
+            int index = Random.Range(0,playerDeaths.Length);
+            if (index >= playerDeaths.Length){
+                index = 2;
+            }
+            sources[sourceIndex].clip = playerDeaths[index];
             sources[sourceIndex].Play();
             sourceIndex++;
         }

@@ -11,6 +11,7 @@ public class TargetDisplay : MonoBehaviour {
     Vector3 originalScale;
 
     void Start(){
+        Screen.showCursor = false;
         StartCoroutine(WaitForTarget());
     }
 
