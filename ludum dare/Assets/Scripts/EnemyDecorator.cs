@@ -72,6 +72,9 @@ public class EnemyDecorator : MonoBehaviour {
                 if (x.name.ToLower().Contains("banner") || x.name.ToLower().Contains("cape")){
                     x.sortingLayerID = 5;
                 }
+                else if (x.name.ToLower().Contains("robe")){
+                    x.sortingLayerID = 7;
+                }
                 else{
                     x.sortingLayerID = 6;
                 }
@@ -81,7 +84,7 @@ public class EnemyDecorator : MonoBehaviour {
             position.y += .4f;
             copy.transform.position = position;
 
-            copy.transform.localScale = copy.transform.localScale * 1.6f;
+            copy.transform.localScale = copy.transform.localScale * 1.8f;
         }
         else{
             int[] permutation = {Random.Range(0, robes.Length+2),
