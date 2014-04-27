@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 public class Fade : MonoBehaviour {
 
@@ -7,21 +8,24 @@ public class Fade : MonoBehaviour {
 
 	void Start () {
         mat = GetComponent<MeshRenderer>().material;
+        var edge = Camera.main.camera.GetComponentsInChildren<Transform>().Where(x => x.name.Equals("edge")).First();
+        edge.GetComponent<MeshRenderer>().sortingLayerID = 2;
+
 	}
 
     public IEnumerator FadeIn(){
-        while (mat.color.a < 255){
+        while (mat.color.a < 1){
             var color = mat.color;
-            color.a += 5;
+            color.a += .05f;
             mat.color = color;
             yield return null;
         }
     }
 
     public IEnumerator FadeOut(){
-        while(mat.color.a > 0) {
+        while(mat.color.a > 0.2f) {
             var color = mat.color;
-            color.a -= 5;
+            color.a -= .05f;
             mat.color = color;
             yield return null;
         }

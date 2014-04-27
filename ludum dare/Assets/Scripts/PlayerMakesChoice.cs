@@ -38,6 +38,8 @@ public class PlayerMakesChoice : MonoBehaviour {
         Vector3 force = new Vector3();
         moveToPos.z += 2;
 
+        GameObject.Find("FogGenerators").GetComponent<FogGeneratorController>().makeFog = false;
+
         while (Vector3.Distance(camera.transform.position, moveToPos) > .2f){
             camera.transform.position = Vector3.SmoothDamp(camera.transform.position, moveToPos, ref force, .5f);
             yield return null;
@@ -46,6 +48,9 @@ public class PlayerMakesChoice : MonoBehaviour {
         // if correct target, play right anim
 
         // otherwise other anim
+
+        // Kill Knight
+        yield return StartCoroutine(targetEnemy.GetComponent<Enemy>().Die());
 
         yield return StartCoroutine(fade.FadeIn());
 
@@ -70,6 +75,8 @@ public class PlayerMakesChoice : MonoBehaviour {
             yield return null;
         }
 
+        GameObject.Find("Fade").GetComponent<MeshRenderer>().sortingLayerID = 2;
+
         // slashes
         yield return StartCoroutine(DrawSlashes());
 
@@ -82,7 +89,7 @@ public class PlayerMakesChoice : MonoBehaviour {
             yield return null;
         }
 
-        yield break;
+        GameObject.Find("FogGenerators").GetComponent<FogGeneratorController>().makeFog = true;
     }
 
     void ResetPosition(){

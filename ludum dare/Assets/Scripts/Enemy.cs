@@ -9,6 +9,7 @@ public class Enemy : MonoBehaviour {
     public SpriteRenderer spriteRenderer;
 
     public Sprite[] frontAnimations;
+    public Sprite[] deathAnimations;
 
     public bool isTarget = false,
                 canMove = true;
@@ -22,11 +23,10 @@ public class Enemy : MonoBehaviour {
     enum Directions { Up, Down, Left, Right };
     Directions currentDirection;
 
-    int actionCount = 0,
-        lastFrame = 0;
+    int actionCount = 0;
     bool isBehaving = false,
          inKillPosition = false,
-         isWalking = true;
+         isWalking = false;
 
 	// Use this for initialization
 	void Start () {
@@ -41,7 +41,7 @@ public class Enemy : MonoBehaviour {
         }
 
         playerCharacter = GameObject.Find("PlayerSprite(Clone)");
-        StartCoroutine(Animate());
+       
 	}
 
     public void SetMyCoords(int newX, int newY){
@@ -117,7 +117,11 @@ public class Enemy : MonoBehaviour {
         // if right x++
         // if down y--
 
+        isWalking = true;
+        StartCoroutine(AnimateWalk());
+
         if (currentDirection == Directions.Up && CheckIfCanMove(x, y + 1)){
+            
             yield return StartCoroutine(moveToSquare(mapLoader.MapCoords[x, y+1].position,
                                                      x,
                                                      y+1));
@@ -140,22 +144,24 @@ public class Enemy : MonoBehaviour {
         else{
             currentBehaviour = Behaviours.Turn;
         }
-
+        isWalking = false;
     }
 
-    IEnumerator Animate(){
-        while (true){
-            if (isWalking){
+    IEnumerator AnimateWalk(){
+        int lastFrame = 0;
+
+        while(isWalking) {
+            if (lastFrame < frontAnimations.Length){
                 spriteRenderer.sprite = frontAnimations[lastFrame];
                 lastFrame++;
-                if (lastFrame >= frontAnimations.Length){
-                    lastFrame = 0;
-                }
+            }
+            else{
+                lastFrame = 0;
             }
 
-
-            yield return new WaitForSeconds(.1f);
+            yield return new WaitForSeconds(.5f);
         }
+        spriteRenderer.sprite = frontAnimations[0];
     }
 
     IEnumerator moveToSquare(Vector3 square, int newX, int newY){
@@ -228,6 +234,18 @@ public class Enemy : MonoBehaviour {
         inKillPosition = true;
 
 
+    }
+
+    public IEnumerator Die(){
+        for (int i =0; i < deathAnimations.Length; i++){
+            spriteRenderer.sprite = deathAnimations[i];
+            if (i > 3){
+                yield return new WaitForSeconds(.09f);
+            }
+            else{
+                yield return new WaitForSeconds(.3f);
+            }
+        }
     }
 
     public bool FarFromPlayer(){

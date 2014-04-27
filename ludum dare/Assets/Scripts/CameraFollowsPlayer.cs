@@ -8,6 +8,7 @@ public class CameraFollowsPlayer : MonoBehaviour {
 
 	void Start () {
         StartCoroutine(FindPlayer());
+        camera.backgroundColor = Color.black;
 	}
 	
 	void Update () {

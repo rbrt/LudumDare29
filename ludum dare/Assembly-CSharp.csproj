@@ -50,6 +50,8 @@
      <Compile Include="Assets\Scripts\Enemy.cs" />
      <Compile Include="Assets\Scripts\EnemyDecorator.cs" />
      <Compile Include="Assets\Scripts\Fade.cs" />
+     <Compile Include="Assets\Scripts\Fog.cs" />
+     <Compile Include="Assets\Scripts\FogGeneratorController.cs" />
      <Compile Include="Assets\Scripts\MapLoader.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />
      <Compile Include="Assets\Scripts\PlayerMakesChoice.cs" />

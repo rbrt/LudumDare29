@@ -5,19 +5,24 @@ public class Player : MonoBehaviour {
 
     public MapLoader mapLoader;
 
+    public SpriteRenderer spriteRenderer;
+    public Sprite[] frontAnimations;
+
     enum Directions { Up, Down, Left, Right };
     Directions currentDirection;
 
     public int x,
                y;
 
-    bool isMoving = false,
-         isHoldingDown = false,
-         isHoldingUp = false,
-         isHoldingRight = false,
-         isHoldingLeft = false,
-         isAttacking = false,
-         canMove = true;
+    public bool isMoving = false;
+
+    public bool isHoldingDown = false,
+                isHoldingUp = false,
+                isHoldingRight = false,
+                isHoldingLeft = false,
+                isAttacking = false,
+                canMove = true,
+                isWalking = false;
 
     public void SetMyCoords(int newX, int newY){
         x = newX;
@@ -91,6 +96,7 @@ public class Player : MonoBehaviour {
                     StartCoroutine(moveToSquare(mapLoader.MapCoords[x, y - 1].position, x, y - 1));
                 }
             }
+            
         }
 	}
 
@@ -134,6 +140,8 @@ public class Player : MonoBehaviour {
 
     IEnumerator moveToSquare(Vector3 square, int newX, int newY) {
         isMoving = true;
+        isWalking = true;
+        StartCoroutine(AnimateWalk());
         Vector3 force = new Vector3();
 
         while(Vector3.Distance(transform.position, square) > .01f) {
@@ -149,5 +157,23 @@ public class Player : MonoBehaviour {
 
         mapLoader.MapCoords[x, y].isOccupied = true;
         isMoving = false;
+        isWalking = false;
+    }
+
+    IEnumerator AnimateWalk(){
+        int lastFrame = 0;
+
+        while(isWalking) {
+            if (lastFrame < frontAnimations.Length){
+                spriteRenderer.sprite = frontAnimations[lastFrame];
+                lastFrame++;
+            }
+            else{
+                lastFrame = 0;
+            }
+
+            yield return new WaitForSeconds(.25f);
+        }
+        spriteRenderer.sprite = frontAnimations[0];
     }
 }
