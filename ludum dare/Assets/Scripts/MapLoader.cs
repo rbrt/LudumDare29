@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -18,10 +18,13 @@ public class MapLoader : MonoBehaviour {
         public bool isWall;
         public bool isOccupied;
 
+        public bool markedForAI;
+
         public mapCoordinates(Vector3 pos, bool wall, bool occupied){
             position = pos;
             isWall = wall;
             isOccupied = occupied;
+            markedForAI = false;
         }
     }
 
@@ -38,8 +41,8 @@ public class MapLoader : MonoBehaviour {
 
     mapCoordinates[,] mapCoords;
 
-    int xLength,
-        yLength;
+    public int xLength,
+               yLength;
 
     public mapCoordinates[,] MapCoords{
         get { return mapCoords; }
@@ -51,7 +54,7 @@ public class MapLoader : MonoBehaviour {
 
     public GameObject playerCharacter;
 
-    List<GameObject> enemies;
+    public List<GameObject> enemies;
     List<Node> allNodes;
 
 	void Start () {
@@ -162,17 +165,11 @@ public class MapLoader : MonoBehaviour {
             }
         });
 
-        Debug.Log(foundEnemy);
-        yield return new WaitForSeconds(10);
         // Kill found enemy
-
-
-        // Set all enemies to be able to move again and
-        // have them come kill you
-        enemies.ForEach(enemy => {
-            enemy.GetComponent<Enemy>().canMove = true;
-            enemy.GetComponent<Enemy>().GoKillPlayer(playerCharacter);
-        });
+        yield return StartCoroutine(GameObject.Find("PlayerMakesChoice").GetComponent<PlayerMakesChoice>().StartSequence(foundEnemy.GetComponent<Enemy>().isTarget,
+                                    playerCharacter,
+                                    foundEnemy,
+                                    enemies));
 
         if (foundEnemy.GetComponent<Enemy>().isTarget){
             Debug.Log("Win!");
@@ -184,52 +181,6 @@ public class MapLoader : MonoBehaviour {
         yield break;
     }
 
-   
-
-    public int[] GetNextSquareToPlayer(int x, int y){
-        List<Node> nodesInPath = new List<Node>();
-        allNodes.ForEach(node => {
-            if (!mapCoords[node.x, node.y].isOccupied){
-                nodesInPath.Add(node);
-            }
-        });
-
-
-        var nextNode = TryNodes(new Node(x, y));
-        int[] result = {nextNode.x, nextNode.y};
-        return result;
-    }
-
-    public Node TryNodes(Node current){
-        Node[] nodesToTry = { new Node(current.x - 1, current.y),
-                              new Node(current.x, current.y-1),
-                              new Node(current.x - 1, current.y - 1),
-                              new Node(current.x + 1, current.y),
-                              new Node(current.x + 1, current.y + 1),
-                              new Node(current.x, current.y+1),
-                              new Node(current.x + 1, current.y-1),
-                              new Node(current.x -1 , current.y + 1)};
-
-
-        if (current.x < 0 || current.x > xLength || current.y < 0 || current.y > yLength){
-            return new Node(-1,-1);
-        }
-
-        if (mapCoords[current.x, current.y].isOccupied && !mapCoords[current.x, current.y].isWall 
-            && playerCharacter.GetComponent<Player>().x == current.x && playerCharacter.GetComponent<Player>().y == current.y){
-                return current;
-        }
-        else{
-            for (int i = 0; i < nodesToTry.Length; i++){
-                Node nextNode = TryNodes(nodesToTry[i]);
-                if (nextNode.x != -1){
-                    return nextNode;
-                }
-            }
-        }
-
-        return new Node(-1, -1);
-    }
 	
 	// Update is called once per frame
 	void Update () {

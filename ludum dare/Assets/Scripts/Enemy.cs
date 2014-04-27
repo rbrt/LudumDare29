@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class Enemy : MonoBehaviour {
@@ -19,18 +19,29 @@ public class Enemy : MonoBehaviour {
     Directions currentDirection;
 
     int actionCount = 0;
-    bool isBehaving = false;
+    bool isBehaving = false,
+         inKillPosition = false;
 
 	// Use this for initialization
 	void Start () {
-        currentBehaviour = Behaviours.Kill//(Behaviours)Random.Range(0, 2);
+        currentBehaviour = (Behaviours)Random.Range(0, 2);
         currentDirection = (Directions)Random.Range(0, 3);
         actionCount = Random.Range(0, 5);
+
+        if (!mapLoader){
+            mapLoader = GameObject.Find("Map Loader").GetComponent<MapLoader>();
+        }
+
+        playerCharacter = GameObject.Find("PlayerSprite(Clone)");
 	}
 
     public void SetMyCoords(int newX, int newY){
         x = newX;
         y = newY;
+    }
+
+    public void SetMeToKill(){
+        currentBehaviour = Behaviours.Kill;
     }
 
 	// Update is called once per frame
@@ -66,7 +77,7 @@ public class Enemy : MonoBehaviour {
     }
 
     IEnumerator AdvanceBehaviour(){
-        if (actionCount <= 0){
+        if (actionCount <= 0 && currentBehaviour != Behaviours.Kill){
             actionCount = Random.Range(1, 5);
             currentBehaviour = (Behaviours)Random.Range(0, 2);
         }
@@ -168,13 +179,35 @@ public class Enemy : MonoBehaviour {
     }
 
     IEnumerator Kill(){
-        var nextSquare = mapLoader.GetNextSquareToPlayer(x, y);
+        Vector3 force = new Vector3();
+        int offsetX = Random.Range(-1, 1);
+        int offsetY = Random.Range(-1, 1);
+        // run at player
 
-        Vector3 newPos = mapLoader.MapCoords[nextSquare[0], nextSquare[1]].position;
+        var pos = playerCharacter.transform.position;
+        while (Vector3.Distance(transform.position, pos) > .5f){
+            pos = playerCharacter.transform.position;
+            pos.x += offsetX;
+            pos.y += offsetY;
 
-        yield return StartCoroutine(moveToSquare(newPos, nextSquare[0], nextSquare[1]));
+            transform.position = Vector3.SmoothDamp(transform.position,
+                                                    pos,
+                                                    ref force,
+                                                    1f);
+            yield return null;
+        }
 
-        yield break;
+        //start doing attack animation
+
+
+
+        inKillPosition = true;
+
+
+    }
+
+    public bool FarFromPlayer(){
+        return !inKillPosition;
     }
 
 }
