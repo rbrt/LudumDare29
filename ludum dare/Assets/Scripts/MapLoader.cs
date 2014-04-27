@@ -59,8 +59,11 @@ public class MapLoader : MonoBehaviour {
     public List<GameObject> enemies;
     List<Node> allNodes;
 
-	void Start () {
+	public void StartGame () {
         GameObject mapRoot = new GameObject("Map Root");
+
+        GameObject.Find("FogGenerators").GetComponent<FogGeneratorController>().makeFog = true;
+        StartCoroutine(GameObject.Find("FogGenerators").GetComponent<FogGeneratorController>().KickOffGenerators());
         map = new List<SpriteRenderer>();
         allNodes = new List<Node>();
         enemies = new List<GameObject>();

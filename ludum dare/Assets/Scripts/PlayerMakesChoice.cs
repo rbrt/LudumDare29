@@ -53,7 +53,7 @@ public class PlayerMakesChoice : MonoBehaviour {
 
         Vector3 enemyPosition = targetDeathLocation.position;
         Vector3 playerPosition = playerDeathLocation.position;
-
+       
         GameObject.Find("FogGenerators").GetComponent<FogGeneratorController>().makeFog = false;
 
         // Move player and enemy into position, and zoom in
@@ -62,13 +62,14 @@ public class PlayerMakesChoice : MonoBehaviour {
             yield return null;
         }
 
-
+        
         while(Vector3.Distance(player.transform.position, playerPosition) > .1f ||
               Vector3.Distance(targetEnemy.transform.position, enemyPosition) > .1f) {
                   player.transform.position = Vector3.SmoothDamp(player.transform.position, playerPosition, ref force2, .5f);
                   targetEnemy.transform.position = Vector3.SmoothDamp(targetEnemy.transform.position, enemyPosition, ref force3, .5f);
             yield return null;
         }
+
 
         yield return StartCoroutine(DisplayDialogue(correctTarget));
 
@@ -120,6 +121,7 @@ public class PlayerMakesChoice : MonoBehaviour {
 
             yield return StartCoroutine(fade.FadeOut());
 
+            StartCoroutine(GameObject.Find("Menu Object").GetComponent<MenuObject>().SetEndSprite(correctTarget));
         
         force = new Vector3();
         while(Vector3.Distance(camera.transform.position, cameraPos) > .2f) {
@@ -128,6 +130,7 @@ public class PlayerMakesChoice : MonoBehaviour {
         }
 
         GameObject.Find("FogGenerators").GetComponent<FogGeneratorController>().makeFog = true;
+        
     }
 
     void ResetPosition(){
@@ -162,7 +165,7 @@ public class PlayerMakesChoice : MonoBehaviour {
     }
 
     IEnumerator DisplayDialogue(bool correctChoice){
-        spriteRenderer.sortingLayerID = 2;
+        spriteRenderer.sortingLayerID = 3;
         Vector3 speechPos = playerDeathLocation.position;
         Vector3 speechScale = transform.localScale;
         speechScale.x = .5f;
