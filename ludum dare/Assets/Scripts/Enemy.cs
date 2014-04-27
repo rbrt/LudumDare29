@@ -6,6 +6,10 @@ public class Enemy : MonoBehaviour {
     public MapLoader mapLoader;
     GameObject playerCharacter;
 
+    public SpriteRenderer spriteRenderer;
+
+    public Sprite[] frontAnimations;
+
     public bool isTarget = false,
                 canMove = true;
 
@@ -18,12 +22,16 @@ public class Enemy : MonoBehaviour {
     enum Directions { Up, Down, Left, Right };
     Directions currentDirection;
 
-    int actionCount = 0;
+    int actionCount = 0,
+        lastFrame = 0;
     bool isBehaving = false,
-         inKillPosition = false;
+         inKillPosition = false,
+         isWalking = true;
 
 	// Use this for initialization
 	void Start () {
+        spriteRenderer.sprite = frontAnimations[0];
+
         currentBehaviour = (Behaviours)Random.Range(0, 2);
         currentDirection = (Directions)Random.Range(0, 3);
         actionCount = Random.Range(0, 5);
@@ -33,6 +41,7 @@ public class Enemy : MonoBehaviour {
         }
 
         playerCharacter = GameObject.Find("PlayerSprite(Clone)");
+        StartCoroutine(Animate());
 	}
 
     public void SetMyCoords(int newX, int newY){
@@ -132,6 +141,21 @@ public class Enemy : MonoBehaviour {
             currentBehaviour = Behaviours.Turn;
         }
 
+    }
+
+    IEnumerator Animate(){
+        while (true){
+            if (isWalking){
+                spriteRenderer.sprite = frontAnimations[lastFrame];
+                lastFrame++;
+                if (lastFrame >= frontAnimations.Length){
+                    lastFrame = 0;
+                }
+            }
+
+
+            yield return new WaitForSeconds(.1f);
+        }
     }
 
     IEnumerator moveToSquare(Vector3 square, int newX, int newY){

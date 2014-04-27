@@ -6,12 +6,12 @@ using System.Linq;
 
 public class MapLoader : MonoBehaviour {
 
-    public SpriteRenderer wallSprite,
-                          playerSprite,
+    public GameObject     playerSprite,
                           enemySprite;
 
 
     public SpriteRenderer[] floorsprites;
+    public SpriteRenderer[] wallsprites;
 
     string filePath = "Assets" + Path.DirectorySeparatorChar + "Maps" + Path.DirectorySeparatorChar;
 
@@ -75,9 +75,13 @@ public class MapLoader : MonoBehaviour {
 
         mapText.ToList().ForEach(line => {
             line.ToList().ForEach(character => {
+                
+                int val = Random.Range(0,100);
+                
                 // 1 = wall
                 if (character == '1'){
-                    var newSprite = GameObject.Instantiate(wallSprite, new Vector3(x, y, 0), transform.rotation) as SpriteRenderer;
+                    int index = Random.Range(0, wallsprites.Length - 1);
+                    var newSprite = GameObject.Instantiate(wallsprites[index], new Vector3(x, y, 0), transform.rotation) as SpriteRenderer;
                     newSprite.transform.parent = mapRoot.transform;
                     map.Add(newSprite);
 
@@ -92,6 +96,15 @@ public class MapLoader : MonoBehaviour {
                 else if (character == '0'){
                     int index = Random.Range(0, floorsprites.Length-1);
                     var newSprite = GameObject.Instantiate(floorsprites[index], new Vector3(x, y, 0), transform.rotation) as SpriteRenderer;
+                    if (val < 25){
+                        newSprite.transform.Rotate(Vector3.forward, 90);
+                    }
+                    else if (val < 50){
+                        newSprite.transform.Rotate(Vector3.forward, 180);
+                    }
+                    else if (val < 75){
+                        newSprite.transform.Rotate(Vector3.forward, 270);
+                    }
                     newSprite.transform.parent = mapRoot.transform;
                     map.Add(newSprite);
 
@@ -103,7 +116,7 @@ public class MapLoader : MonoBehaviour {
                     var newSprite = GameObject.Instantiate(floorsprites[index], new Vector3(x, y, 0), transform.rotation) as SpriteRenderer;
                     newSprite.transform.parent = mapRoot.transform;
                     map.Add(newSprite);
-                    var player = GameObject.Instantiate(playerSprite, new Vector3(x, y, 0), transform.rotation) as SpriteRenderer;
+                    var player = GameObject.Instantiate(playerSprite, new Vector3(x, y, 0), transform.rotation) as GameObject;
                     player.transform.parent = mapRoot.transform;
                     player.GetComponent<Player>().SetMyCoords(countX, countY);
                     player.GetComponent<Player>().mapLoader = this;
@@ -118,7 +131,7 @@ public class MapLoader : MonoBehaviour {
                     newSprite.transform.parent = mapRoot.transform;
                     map.Add(newSprite);
 
-                    var enemy = GameObject.Instantiate(enemySprite, new Vector3(x, y, 0), transform.rotation) as SpriteRenderer;
+                    var enemy = GameObject.Instantiate(enemySprite, new Vector3(x, y, 0), transform.rotation) as GameObject;
                     enemy.transform.parent = mapRoot.transform;
                     enemy.GetComponent<Enemy>().SetMyCoords(countX, countY);
                     enemy.GetComponent<Enemy>().mapLoader = this;
