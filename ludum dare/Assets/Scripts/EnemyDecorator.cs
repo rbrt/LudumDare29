@@ -64,6 +64,24 @@ public class EnemyDecorator : MonoBehaviour {
                 bannerRenderer.transform.position = pos;
                 bannerRenderer.sortingLayerID = 1;
             }
+
+            var display = GameObject.Find("TargetDisplay");
+            GameObject copy = GameObject.Instantiate(enemy, display.transform.position, transform.rotation) as GameObject;
+            Destroy(copy.GetComponent<Enemy>());
+            copy.GetComponentsInChildren<SpriteRenderer>().ToList().ForEach(x => {
+                if (x.name.ToLower().Contains("banner") || x.name.ToLower().Contains("cape")){
+                    x.sortingLayerID = 5;
+                }
+                else{
+                    x.sortingLayerID = 6;
+                }
+            });
+            copy.transform.parent = display.transform;
+            var position = copy.transform.position;
+            position.y += .4f;
+            copy.transform.position = position;
+
+            copy.transform.localScale = copy.transform.localScale * 1.6f;
         }
         else{
             int[] permutation = {Random.Range(0, robes.Length+2),

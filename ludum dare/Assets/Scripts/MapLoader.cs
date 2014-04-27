@@ -61,6 +61,7 @@ public class MapLoader : MonoBehaviour {
 
 	public void StartGame () {
         GameObject mapRoot = new GameObject("Map Root");
+        GameObject.Find("TargetDisplay").GetComponent<SpriteRenderer>().enabled = true;
 
         GameObject.Find("FogGenerators").GetComponent<FogGeneratorController>().makeFog = true;
         StartCoroutine(GameObject.Find("FogGenerators").GetComponent<FogGeneratorController>().KickOffGenerators());
