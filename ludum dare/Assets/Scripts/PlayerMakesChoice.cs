@@ -8,6 +8,15 @@ public class PlayerMakesChoice : MonoBehaviour {
     public Camera camera;
     public GameObject enemyPrefab;
 
+    public Transform playerDeathLocation,
+                     targetDeathLocation;
+
+    public SpriteRenderer spriteRenderer;
+    public Sprite itsYou,
+                  vengeance,
+                  whatHaveIDone;
+
+
     GameObject player,
                targetEnemy;
 
@@ -33,21 +42,35 @@ public class PlayerMakesChoice : MonoBehaviour {
         targetEnemy = e;
         enemies = es;
 
+        Camera.main.GetComponent<CameraFollowsPlayer>().follow = false;
+
         var cameraPos = camera.transform.position;
         Vector3 moveToPos = cameraPos;
         Vector3 force = new Vector3();
+        Vector3 force2 = new Vector3();
+        Vector3 force3 = new Vector3();
         moveToPos.z += 2;
+
+        Vector3 enemyPosition = targetDeathLocation.position;
+        Vector3 playerPosition = playerDeathLocation.position;
 
         GameObject.Find("FogGenerators").GetComponent<FogGeneratorController>().makeFog = false;
 
+        // Move player and enemy into position, and zoom in
         while (Vector3.Distance(camera.transform.position, moveToPos) > .2f){
             camera.transform.position = Vector3.SmoothDamp(camera.transform.position, moveToPos, ref force, .5f);
             yield return null;
         }
 
-        // if correct target, play right anim
 
-        // otherwise other anim
+        while(Vector3.Distance(player.transform.position, playerPosition) > .1f ||
+              Vector3.Distance(targetEnemy.transform.position, enemyPosition) > .1f) {
+                  player.transform.position = Vector3.SmoothDamp(player.transform.position, playerPosition, ref force2, .5f);
+                  targetEnemy.transform.position = Vector3.SmoothDamp(targetEnemy.transform.position, enemyPosition, ref force3, .5f);
+            yield return null;
+        }
+
+        yield return StartCoroutine(DisplayDialogue(correctTarget));
 
         // Kill Knight
         yield return StartCoroutine(targetEnemy.GetComponent<Enemy>().Die());
@@ -63,6 +86,8 @@ public class PlayerMakesChoice : MonoBehaviour {
             }
         });
 
+        Camera.main.GetComponent<CameraFollowsPlayer>().follow = true;
+
         bool far = true;
         while (far){
             far = false;
@@ -75,12 +100,25 @@ public class PlayerMakesChoice : MonoBehaviour {
             yield return null;
         }
 
+        yield return StartCoroutine(FadeEnemies(enemies));
+        
+
         GameObject.Find("Fade").GetComponent<MeshRenderer>().sortingLayerID = 2;
 
         // slashes
         yield return StartCoroutine(DrawSlashes());
+        var col = player.GetComponent<Player>().spriteRenderer.material.color;
+        col.a = 1;
+        player.GetComponent<Player>().spriteRenderer.material.color = col;
+        player.GetComponent<Player>().SetPlayerDead();
 
-        yield return StartCoroutine(fade.FadeOut());
+        for(int i = enemies.Count-1; i >= 0; i-- ){
+            if (enemies[i] != targetEnemy){
+                Destroy(enemies[i]);
+            }
+        }
+
+            yield return StartCoroutine(fade.FadeOut());
 
         
         force = new Vector3();
@@ -99,6 +137,60 @@ public class PlayerMakesChoice : MonoBehaviour {
             x.SetPosition(2, Vector3.zero);
             x.SetPosition(3, Vector3.zero);
         });
+    }
+
+    IEnumerator FadeEnemies(List<GameObject> enemies){
+        bool done = false;
+        while (!done){
+            done = true;
+            for (int i = 0; i < enemies.Count; i++){
+                var col = enemies[i].GetComponent<Enemy>().spriteRenderer.material.color;
+                if (enemies[i] != targetEnemy && col.a > 0f){
+                    done = false;
+                    col.a -= .05f;
+                    enemies[i].GetComponent<Enemy>().spriteRenderer.material.color = col;
+                }
+            }
+            var color = player.GetComponent<Player>().spriteRenderer.material.color;
+            if (color.a > 0){
+                done = false;
+                color.a -= .05f;
+                player.GetComponent<Player>().spriteRenderer.material.color = color;
+            }
+            yield return null;
+        }
+    }
+
+    IEnumerator DisplayDialogue(bool correctChoice){
+        spriteRenderer.sortingLayerID = 2;
+        Vector3 speechPos = playerDeathLocation.position;
+        Vector3 speechScale = transform.localScale;
+        speechScale.x = .5f;
+        speechScale.y = .5f;
+
+        transform.localScale = speechScale;
+
+        speechPos.y += .65f;
+        speechPos.x -= .25f;
+        speechPos.z = 2.6f;
+        transform.position = speechPos;
+        spriteRenderer.sprite = vengeance;
+        yield return new WaitForSeconds(2);
+
+        speechPos = targetDeathLocation.position;
+        speechPos.y += .65f;
+        speechPos.x -= .6f;
+        speechPos.z = 2.6f;
+        transform.position = speechPos;
+        
+        if (correctChoice){
+            spriteRenderer.sprite = itsYou;
+        }
+        else{
+            spriteRenderer.sprite = whatHaveIDone;
+        }
+        yield return new WaitForSeconds(2);
+        spriteRenderer.enabled = false;
     }
 
     IEnumerator DrawSlashes(){

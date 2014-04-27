@@ -8,6 +8,8 @@ public class Player : MonoBehaviour {
     public SpriteRenderer spriteRenderer;
     public Sprite[] frontAnimations;
 
+    public Sprite deadPlayerSprite;
+
     enum Directions { Up, Down, Left, Right };
     Directions currentDirection;
 
@@ -22,7 +24,8 @@ public class Player : MonoBehaviour {
                 isHoldingLeft = false,
                 isAttacking = false,
                 canMove = true,
-                isWalking = false;
+                isWalking = false,
+                isDead = false;
 
     public void SetMyCoords(int newX, int newY){
         x = newX;
@@ -135,7 +138,9 @@ public class Player : MonoBehaviour {
             yield return StartCoroutine(mapLoader.CheckEnemies(x,y));
         }
 
-        canMove = true;
+        if (!isDead){
+            canMove = true;
+        }
     }
 
     IEnumerator moveToSquare(Vector3 square, int newX, int newY) {
@@ -175,5 +180,13 @@ public class Player : MonoBehaviour {
             yield return new WaitForSeconds(.25f);
         }
         spriteRenderer.sprite = frontAnimations[0];
+    }
+
+    public void SetPlayerDead(){
+        isDead = true;
+        canMove = false;
+        isMoving = false;
+        isWalking = false;
+        spriteRenderer.sprite = deadPlayerSprite;
     }
 }

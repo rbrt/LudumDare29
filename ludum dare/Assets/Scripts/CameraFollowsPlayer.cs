@@ -5,6 +5,7 @@ public class CameraFollowsPlayer : MonoBehaviour {
 
     public GameObject player;
     Vector3 force;
+    public bool follow = true;
 
 	void Start () {
         StartCoroutine(FindPlayer());
@@ -12,11 +13,13 @@ public class CameraFollowsPlayer : MonoBehaviour {
 	}
 	
 	void Update () {
-        if (player != null){
-            Vector3 pos = transform.position;
-            pos = Vector3.SmoothDamp(pos, player.transform.position, ref force, .4f);
-            pos.z = transform.position.z;
-            transform.position = pos;
+        if (follow){
+            if (player != null){
+                Vector3 pos = transform.position;
+                pos = Vector3.SmoothDamp(pos, player.transform.position, ref force, .4f);
+                pos.z = transform.position.z;
+                transform.position = pos;
+            }
         }
 	}
 

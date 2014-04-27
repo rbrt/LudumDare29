@@ -25,8 +25,8 @@ public class Fog : MonoBehaviour {
         color.a = 0;
         spriteRenderer.color = color;
 
-        transform.localScale = new Vector3(Random.RandomRange(.2f, .8f),
-                                           Random.RandomRange(.2f, .8f), 
+        transform.localScale = new Vector3(Random.Range(.2f, .8f),
+                                           Random.Range(.2f, .8f), 
                                            transform.localScale.z);
         
         transform.localPosition = new Vector3(originalPos.x + Random.Range(-offset, offset),
@@ -43,8 +43,8 @@ public class Fog : MonoBehaviour {
                 transform.localScale = Vector3.SmoothDamp(transform.localScale, originalScale, ref force1, 1f);
             }
             else {
-                originalScale = new Vector3(Random.RandomRange(.2f, .8f),
-                                            Random.RandomRange(.2f, .8f),
+                originalScale = new Vector3(Random.Range(.2f, .8f),
+                                            Random.Range(.2f, .8f),
                                             transform.localScale.z);
             }
 
@@ -72,8 +72,8 @@ public class Fog : MonoBehaviour {
                 transform.localScale = Vector3.SmoothDamp(transform.localScale, originalScale, ref force1, 1f);
             }
             else {
-                originalScale = new Vector3(Random.RandomRange(.2f, .8f),
-                                            Random.RandomRange(.2f, .8f),
+                originalScale = new Vector3(Random.Range(.2f, .8f),
+                                            Random.Range(.2f, .8f),
                                             transform.localScale.z);
             }
 

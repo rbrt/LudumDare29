@@ -16,7 +16,7 @@ public class Fade : MonoBehaviour {
     public IEnumerator FadeIn(){
         while (mat.color.a < 1){
             var color = mat.color;
-            color.a += .05f;
+            color.a += .005f;
             mat.color = color;
             yield return null;
         }
@@ -25,7 +25,7 @@ public class Fade : MonoBehaviour {
     public IEnumerator FadeOut(){
         while(mat.color.a > 0.2f) {
             var color = mat.color;
-            color.a -= .05f;
+            color.a -= .005f;
             mat.color = color;
             yield return null;
         }

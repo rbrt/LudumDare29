@@ -53,6 +53,7 @@
      <Compile Include="Assets\Scripts\Fog.cs" />
      <Compile Include="Assets\Scripts\FogGeneratorController.cs" />
      <Compile Include="Assets\Scripts\MapLoader.cs" />
+     <Compile Include="Assets\Scripts\MenuObject.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />
      <Compile Include="Assets\Scripts\PlayerMakesChoice.cs" />
      <None Include="Assets\Maps\map1.txt" />

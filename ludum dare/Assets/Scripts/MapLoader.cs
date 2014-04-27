@@ -85,12 +85,7 @@ public class MapLoader : MonoBehaviour {
                     newSprite.transform.parent = mapRoot.transform;
                     map.Add(newSprite);
 
-                    try {
-                        mapCoords[countX, countY] = new mapCoordinates(new Vector3(x, y, 0), true, false);
-                    }
-                    catch (System.IndexOutOfRangeException e){
-                        Debug.Log(mapCoords.Length + " " + countX + " " + countY);
-                    }
+                    mapCoords[countX, countY] = new mapCoordinates(new Vector3(x, y, 0), true, false);
                 }
                 // 2 = floor
                 else if (character == '0'){
